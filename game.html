@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMD Drop and Catch Game</title>
+    <link rel="stylesheet" href="CSS/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            background: linear-gradient(to bottom, #FFCC33 0%, #7A0019 100%);
+            border: 3px solid #7A0019;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(122,0,25,0.4);
+        }
+
+        .game-header {
+            background: rgba(122,0,25,0.9);
+            color: #FFCC33;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 20px;
+            background: rgba(255,204,51,0.9);
+            color: #7A0019;
+            font-weight: bold;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 80px);
+            background: linear-gradient(to bottom, #FFF8DC 0%, #F5F5DC 100%);
+        }
+
+        .catcher {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 20px;
+            background: linear-gradient(45deg, #7A0019, #FFCC33);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(122,0,25,0.4);
+            transition: left 0.1s ease;
+        }
+
+        .falling-object {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            /* Drop shadow removed for cleaner look */
+            animation: fall linear;
+        }
+
+        .good-object {
+            /* UMD Bulldog image for good objects */
+            background: url('images/umd-bulldog.png') center center / contain no-repeat;
+            width: 50px;            /* match increased object size */
+            height: 50px;
+            border-radius: 0;       /* keep logo shape */
+            background-color: transparent;
+        }
+
+        .bad-object {
+            /* UMD Maryland flag ball for bad objects */
+            background: url('images/umd-maryland.png') center center / cover no-repeat;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: transparent;
+        }
+
+        .bonus-object {
+            /* Gold Bulldog image for bonus objects */
+            background: url('images/umd-bulldog-gold.png') center center / contain no-repeat;
+            width: 50px;            /* match increased object size */
+            height: 50px;
+            border-radius: 0;       /* keep logo shape */
+            background-color: transparent;
+            /* No extra animation here so it inherits the fall animation */
+        }
+
+        @keyframes fall {
+            from {
+                top: -30px;
+            }
+            to {
+                top: 100%;
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .game-over h2 {
+            margin-bottom: 20px;
+            color: #FFCC33;
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #7A0019, #FFCC33);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .instructions {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(122,0,25,0.8);
+            color: #FFCC33;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            max-width: 200px;
+        }
+
+        .level-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,204,51,0.9);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: #7A0019;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+    <div class="vignette"></div>
+
+    <nav class="navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="hobbies.html" class="nav-link">Hobbies</a>
+        <a href="discover.html" class="nav-link">Discover</a>
+        <a href="resume.html" class="nav-link">Resume</a>
+        <a href="career.html" class="nav-link">Career</a>
+        <a href="game.html" class="nav-link">Game</a>
+    </nav>
+
+    <div class="container">
+        <div class="page-section">
+            <div class="corner-border"></div>
+            <div class="corner-border"></div>
+            <div class="corner-border"></div>
+            <div class="corner-border"></div>
+            <h1>UMD Drop and Catch</h1>
+            <div class="decorative-line"></div>
+
+            <div class="game-container">
+        <div class="game-header">
+            UMD Drop and Catch Game
+        </div>
+        
+        <div class="score-board">
+            <div>Score: <span id="score">0</span></div>
+            <div>Lives: <span id="lives">3</span></div>
+        </div>
+
+        
+
+        <div class="game-area" id="gameArea">
+            <div class="catcher" id="catcher"></div>
+        </div>
+
+        <div class="game-over" id="gameOver">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <p>Level Reached: <span id="finalLevel">1</span></p>
+            <button class="restart-btn" onclick="restartGame()">Play Again</button>
+        </div>
+            </div>
+
+            <div class="level-indicator">
+                Level: <span id="level">1</span>
+            </div>
+
+            <div class="instructions">
+                🎮 Use A/D or ←/→ to move<br>
+                🟢 Catch green objects (+10)<br>
+                🔴 Avoid red objects (-1 life)<br>
+                🟡 Catch gold for bonus (+50)
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio element for celebration sound -->
+    <audio id="celebrationSound" preload="auto">
+        <source src="media/greeting.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
