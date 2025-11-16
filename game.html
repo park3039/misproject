@@ -26,6 +26,7 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(122,0,25,0.4);
+            margin: 0 auto;
         }
 
         .game-header {
@@ -152,15 +153,13 @@
         }
 
         .instructions {
-            position: absolute;
-            top: 10px;
-            left: 10px;
             background: rgba(122,0,25,0.8);
             color: #FFCC33;
-            padding: 10px;
+            padding: 15px;
             border-radius: 10px;
-            font-size: 12px;
-            max-width: 200px;
+            font-size: 14px;
+            max-width: 220px;
+            line-height: 1.6;
         }
 
         .level-indicator {
@@ -172,6 +171,18 @@
             border-radius: 15px;
             font-weight: bold;
             color: #7A0019;
+        }
+
+        .game-layout {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            margin: 0 auto;
+        }
+
+        .instructions-sidebar {
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -197,7 +208,17 @@
             <h1>UMD Drop and Catch</h1>
             <div class="decorative-line"></div>
 
-            <div class="game-container">
+            <div class="game-layout">
+                <div class="instructions-sidebar">
+                    <div class="instructions">
+                        🎮 Use A/D or ←/→ to move<br>
+                        🐕 Catch the UMD Bulldogs (+10)<br>
+                        🏈 Avoid the Maryland balls (-1 life)<br>
+                        🏆 Catch the Golden Bulldogs (+50)
+                    </div>
+                </div>
+
+    <div class="game-container">
         <div class="game-header">
             UMD Drop and Catch Game
         </div>
@@ -206,8 +227,6 @@
             <div>Score: <span id="score">0</span></div>
             <div>Lives: <span id="lives">3</span></div>
         </div>
-
-        
 
         <div class="game-area" id="gameArea">
             <div class="catcher" id="catcher"></div>
@@ -218,28 +237,40 @@
             <p>Final Score: <span id="finalScore">0</span></p>
             <p>Level Reached: <span id="finalLevel">1</span></p>
             <button class="restart-btn" onclick="restartGame()">Play Again</button>
-        </div>
-            </div>
+    </div>
 
-            <div class="level-indicator">
-                Level: <span id="level">1</span>
-            </div>
-
-            <div class="instructions">
-                🎮 Use A/D or ←/→ to move<br>
-                🟢 Catch green objects (+10)<br>
-                🔴 Avoid red objects (-1 life)<br>
-                🟡 Catch gold for bonus (+50)
+    <div class="level-indicator">
+        Level: <span id="level">1</span>
+    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Audio element for celebration sound -->
-    <audio id="celebrationSound" preload="auto">
-        <source src="media/greeting.mp3" type="audio/mpeg">
+    <!-- Audio element for game background music -->
+    <audio id="gameMusic" preload="auto" loop volume="0.5">
+        <source src="media/gamemusic.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
     <script src="js/game.js"></script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-contact">
+                <div class="footer-contact-item">
+                    <strong>Email:</strong>
+                    <a href="mailto:parkpe06@gmail.com">parkpe06@gmail.com</a>
+                </div>
+                <div class="footer-contact-item">
+                    <strong>Phone:</strong>
+                    <a href="tel:+17155010566">(715) 501-0566</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                © 2025 Peyton Park. All rights reserved.
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
