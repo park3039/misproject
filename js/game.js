@@ -8,7 +8,11 @@ class DropCatchGame {
         this.gameOverElement = document.getElementById('gameOver');
         this.finalScoreElement = document.getElementById('finalScore');
         this.finalLevelElement = document.getElementById('finalLevel');
-        this.celebrationSound = document.getElementById('celebrationSound');
+        this.gameMusic = document.getElementById('gameMusic');
+        // Set volume to 50%
+        if (this.gameMusic) {
+            this.gameMusic.volume = 0.5;
+        }
 
         this.score = 0;
         this.lives = 3;
@@ -18,6 +22,7 @@ class DropCatchGame {
         this.fallingObjects = [];
         this.gameSpeed = 2000; // milliseconds between drops
         this.dropInterval = null;
+        this.musicStarted = false;
 
         this.init();
     }
@@ -27,8 +32,35 @@ class DropCatchGame {
         this.startGame();
     }
 
+    startMusic() {
+        if (!this.musicStarted && this.gameMusic) {
+            this.gameMusic.play().then(() => {
+                this.musicStarted = true;
+            }).catch(error => {
+                console.log('Audio playback failed:', error);
+            });
+        }
+    }
+
     setupEventListeners() {
+        // Enable audio on first user interaction
+        const enableAudio = () => {
+            this.startMusic();
+            document.removeEventListener('keydown', enableAudio);
+            document.removeEventListener('click', enableAudio);
+            document.removeEventListener('touchstart', enableAudio);
+        };
+        
+        document.addEventListener('keydown', enableAudio);
+        document.addEventListener('click', enableAudio);
+        document.addEventListener('touchstart', enableAudio);
+
         document.addEventListener('keydown', (e) => {
+            // Start music on first keypress if not started
+            if (!this.musicStarted) {
+                this.startMusic();
+            }
+            
             if (!this.gameRunning) return;
 
             switch(e.key.toLowerCase()) {
@@ -45,6 +77,11 @@ class DropCatchGame {
 
         // Touch/mouse support for mobile
         this.gameArea.addEventListener('click', (e) => {
+            // Start music on first click if not started
+            if (!this.musicStarted) {
+                this.startMusic();
+            }
+            
             if (!this.gameRunning) return;
             
             const rect = this.gameArea.getBoundingClientRect();
@@ -74,6 +111,9 @@ class DropCatchGame {
         
         this.updateDisplay();
         this.gameOverElement.style.display = 'none';
+        
+        // Start playing game music (will work after user interaction)
+        this.startMusic();
         
         this.dropInterval = setInterval(() => {
             this.createFallingObject();
@@ -152,11 +192,6 @@ class DropCatchGame {
                     this.score += object.points;
                     this.updateDisplay();
                     
-                    // Play celebration sound for bonus objects (50 points)
-                    if (object.points === 50) {
-                        this.playCelebrationSound();
-                    }
-                    
                     // Check for level up
                     if (this.score > 0 && this.score % 100 === 0) {
                         this.levelUp();
@@ -214,6 +249,13 @@ class DropCatchGame {
         this.gameRunning = false;
         clearInterval(this.dropInterval);
         
+        // Stop game music
+        if (this.gameMusic) {
+            this.gameMusic.pause();
+            this.gameMusic.currentTime = 0;
+            this.musicStarted = false;
+        }
+        
         // Clear all falling objects
         this.fallingObjects.forEach(obj => {
             if (obj.element.parentNode) {
@@ -231,16 +273,6 @@ class DropCatchGame {
         this.scoreElement.textContent = this.score;
         this.livesElement.textContent = this.lives;
         this.levelElement.textContent = this.level;
-    }
-
-    playCelebrationSound() {
-        if (this.celebrationSound) {
-            // Reset audio to beginning and play
-            this.celebrationSound.currentTime = 0;
-            this.celebrationSound.play().catch(error => {
-                console.log('Audio playback failed:', error);
-            });
-        }
     }
 
     gameLoop() {
@@ -271,6 +303,13 @@ class DropCatchGame {
 // Global functions
 function restartGame() {
     game.startGame();
+    // Restart music when game restarts
+    if (game.gameMusic && game.musicStarted) {
+        game.gameMusic.currentTime = 0;
+        game.gameMusic.play().catch(error => {
+            console.log('Audio playback failed:', error);
+        });
+    }
 }
 
 // Initialize game when page loads
